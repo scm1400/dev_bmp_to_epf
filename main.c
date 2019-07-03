@@ -207,7 +207,7 @@ int main()
 
 		free(image);     
 	}
-
+	// 모든 파일 다시 반복해서 시작위치와 끝나는 위치 기록
 	for (int i = 0; i <= iter; i++)
 	{
 		FILE *fpBmp;
@@ -287,6 +287,9 @@ int main()
 		//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
 		//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
 		//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
+		
+		
+		// t에 스텐실 개수 저장해서 배열에 저장함
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -345,8 +348,8 @@ int main()
 			}
 			c = 0;
 			d = 128;
-			//fprintf(fpTxt, "\n");  
-		}
+			//fprintf(fpTxt, "\n"); 
+		} 
 		numArr[i+1] = t;
 		t = 0;
 		numArr2[i + 1] = width * height;
