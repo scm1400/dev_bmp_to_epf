@@ -8,39 +8,35 @@
 
 int t = 0;
 int t2 = 0;
-int numArr[50000];
-int numArr2[10000];
+int t5 = 0;
+int t6 = 0;
+unsigned int numArr[400000] ;
+unsigned int numArr2[400000] ;
 
-typedef struct _BITMAPFILEHEADER    
+typedef struct _BITMAPFILEHEADER
 {
-	unsigned short bfType;           
-	unsigned int   bfSize;           
-	unsigned short bfReserved1;      
-	unsigned short bfReserved2;      
-	unsigned int   bfOffBits;        
+	unsigned short bfType;
+	unsigned int   bfSize;
+	unsigned short bfReserved1;
+	unsigned short bfReserved2;
+	unsigned int   bfOffBits;
 } BITMAPFILEHEADER;
 
-typedef struct _BITMAPINFOHEADER    
+typedef struct _BITMAPINFOHEADER
 {
-	unsigned int   biSize;        
-	int            biWidth;       
-	int            biHeight;        
-	unsigned short biPlanes;        
-	unsigned short biBitCount;      
-	unsigned int   biCompression;    
-	unsigned int   biSizeImage;     
-	int            biXPelsPerMeter; 
-	int            biYPelsPerMeter; 
-	unsigned int   biClrUsed;        
-	unsigned int   biClrImportant;  
+	unsigned int   biSize;
+	int            biWidth;
+	int            biHeight;
+	unsigned short biPlanes;
+	unsigned short biBitCount;
+	unsigned int   biCompression;
+	unsigned int   biSizeImage;
+	int            biXPelsPerMeter;
+	int            biYPelsPerMeter;
+	unsigned int   biClrUsed;
+	unsigned int   biClrImportant;
 } BITMAPINFOHEADER;
 
-typedef struct _RGBTRIPLE         
-{
-	unsigned char rgbtBlue;       
-	unsigned char rgbtGreen;        
-	unsigned char rgbtRed;           
-} RGBTRIPLE;
 
 
 #pragma pack(pop)
@@ -51,175 +47,278 @@ typedef struct _RGBTRIPLE
 int main()
 {
 	int iter;
+	char epf[20];
+	char epf2[300];
+
 	printf("사진의 개수(n)를 입력하세요: 00000.bmp ~ n.bmp ");
 	scanf("%d", &iter);
-	for (int i = 0; i <= iter; i++)
-	{
-		FILE *fpBmp;                   
-		FILE *fpTxt;                   
-		BITMAPFILEHEADER fileHeader;    
-		BITMAPINFOHEADER infoHeader;   
 
-		unsigned char *image;    
-		int size;              
-		int width, height;      
-		int padding;            
+	printf("기존 epf파일 이름을 적어주세요: xxxxx.epf ");
+	scanf("%s", &epf);
+	sprintf(epf2, "%s.epf", epf);
 
-
-		char filename[20];
-		sprintf(filename, "%05d.bmp", i);
-		fpBmp = fopen(filename, "rb");
-		if (fpBmp == NULL)
-			return 0;
-
-		if (fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) < 1)
+		for (int i = 0; i <= iter; i++)
 		{
-			fclose(fpBmp);
-			return 0;
-		}
+			FILE *fpBmp;
+			FILE *fpTxt;
+			BITMAPFILEHEADER fileHeader;
+			BITMAPINFOHEADER infoHeader;
 
-		if (fileHeader.bfType != 'MB')
-		{
-			fclose(fpBmp);
-			return 0;
-		}
+			unsigned char *image;
+			int size;
+			int width, height;
+			int padding;
 
-		if (fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) < 1)
-		{
-			fclose(fpBmp);
-			return 0;
-		}
 
-		if (infoHeader.biBitCount != 8)
-		{
-			fclose(fpBmp);
-			return 0;
-		}
+			char filename[20];
+			sprintf(filename, "%05d.bmp", i);
+			fpBmp = fopen(filename, "rb");
+			if (fpBmp == NULL)
+				return 0;
 
-		size = infoHeader.biSizeImage;    
-		width = infoHeader.biWidth;     
-		height = infoHeader.biHeight;    
+		//	if
+				(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) );
+		//	{
+		//		fclose(fpBmp);
+		//		return 0;
+		//	}
 
-		padding = (PIXEL_ALIGN - ((width * PIXEL_SIZE) % PIXEL_ALIGN)) % PIXEL_ALIGN;
-
-		if (size == 0) 
-		{
-			size = (width * PIXEL_SIZE + padding) * height;
-		}
-
-		image = malloc(size);   
-
-		fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
-
-		if (fread(image, size, 1, fpBmp) < 1)
-		{
-			fclose(fpBmp);
-			return 0;
-		}
-
-		fclose(fpBmp); 
-
-		fpTxt = fopen("stencil.txt", "at+");  
-		if (fpTxt == NULL)    
-		{
-			free(image);     
-			return 0;       
-		}
-
-		int c = 0;
-		int d = 128;
-
-		for (int y = height - 1; y >= 0; y--)
-		{
-			for (int x = 0; x < width; x++)
+			if (fileHeader.bfType != 'MB')
 			{
-
-				int index = (x * PIXEL_SIZE) + (y * (width * PIXEL_SIZE)) + (padding * y);
-
-
-				int pixel = image[index];
-
-				fprintf(fpTxt, "%02x ", pixel);
+				fclose(fpBmp);
+				return 0;
 			}
 
-			//fprintf(fpTxt, "\n");
-		}
-
-		//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
-		//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
-		//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
-		for (int y = height - 1; y >= 0; y--)
-		{
-			for (int x = 0; x < width; x++)
+		//	if 
+			(fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) );
+		//	{
+			//	fclose(fpBmp);
+		//		return 0;
+		//	}
+			
+			if (infoHeader.biBitCount != 8)
 			{
-				int index = (x * PIXEL_SIZE) + (y * (width * PIXEL_SIZE)) + (padding * y);
+				fclose(fpBmp);
+				return 0;
+			}
+			
 
-				int pixel = image[index];
+			size = infoHeader.biSizeImage;
+			width = infoHeader.biWidth;
+			height = infoHeader.biHeight;
 
-				if (pixel == 0)
+			padding = (PIXEL_ALIGN - ((width * PIXEL_SIZE) % PIXEL_ALIGN)) % PIXEL_ALIGN;
+
+			if (size == 0)
+			{
+				size = (width * PIXEL_SIZE + padding) * height;
+			}
+
+			image = malloc(size);
+
+			fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
+
+			//if
+			(fread(image, size, 1, fpBmp));
+			//{
+			//	fclose(fpBmp);
+			//	return 0;
+		//	}
+
+			fclose(fpBmp);
+
+			fpTxt = fopen("stencil.txt", "at+");
+			if (fpTxt == NULL)
+			{
+				free(image);
+				return 0;
+			}
+
+			int c = 0;
+			int d = 128;
+
+			for (int y = height - 1; y >= 0; y--)
+			{
+				for (int x = 0; x < width; x++)
 				{
-					c++;
-					if (d > 128)
+
+					int index = (x * PIXEL_SIZE) + (y * (width * PIXEL_SIZE)) + (padding * y);
+
+
+					int pixel = image[index];
+
+					fprintf(fpTxt, "%02x ", pixel);
+				}
+
+				//fprintf(fpTxt, "\n");
+			}
+
+			//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
+			//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
+			//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
+			for (int y = height - 1; y >= 0; y--)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int index = (x * PIXEL_SIZE) + (y * (width * PIXEL_SIZE)) + (padding * y);
+
+					int pixel = image[index];
+
+					if (pixel == 0)
 					{
-						fprintf(fpTxt, "%02x ", d);
+						c++;
+
+						if (d > 128 && d<=255)
+						{
+							fprintf(fpTxt, "%02x ", d);
+						}
+						else if (d > 255)
+						{
+							fprintf(fpTxt, "ff ");
+							if ((d - 127) > 255)
+							{
+								fprintf(fpTxt, "ff ");
+								if ((d - 254) > 255)
+								{
+									fprintf(fpTxt, "ff ");
+									fprintf(fpTxt, "%02x ", d - 381);
+								}
+								else
+								{
+									fprintf(fpTxt, "%02x ", d - 254);
+								}
+							}
+							else
+							{
+								fprintf(fpTxt, "%02x ", d - 127);
+							}
+							
+						}
 						d = 128;
-					}
-					if ( ((index - padding * y) % width == width - 1 ) && c > 0)
-					{	
-						if(c==width)
+						if (((index - padding * y) % width == width - 1) && c > 0)
 						{
-							c = width;
-							fprintf(fpTxt, "%02x ", c);
-							fprintf(fpTxt, "00 ");
+							if (c == width)
+							{
+								c = width;
+								if (c >= 128)
+								{
+									fprintf(fpTxt, "7f ");
+									fprintf(fpTxt, "00 ");
+								}
+								else
+								{
+									fprintf(fpTxt, "%02x ", c);
+									fprintf(fpTxt, "00 ");
+								}
+								c = 0;
+							}
+							else
+							{
+								if (c >= 128)
+								{
+									fprintf(fpTxt, "7f ");
+									fprintf(fpTxt, "00 ");
+								}
+								else {
+									//fprintf(fpTxt, "%02x ", c);
+									fprintf(fpTxt, "00 ");
+								}
+								c = 0;
+							}
+
 						}
-						else
+					}
+					else if (pixel > 0)
+					{
+						d++;
+						if ( c>0 && c< 128)
 						{
+							fprintf(fpTxt, "%02x ", c);
 							c = 0;
-							fprintf(fpTxt, "%02x ", c);
 						}
+						if(c>=128)
+						{
+							fprintf(fpTxt, "7f ");
+							c = 0;
+						}
+						if (((index - padding * y) % width == width - 1) && c == 0)
+						{
+							if (d > 128 && d <= 255)
+							{
+								fprintf(fpTxt, "%02x ", d);
+							}
+							else if (d > 255)
+							{
+								fprintf(fpTxt, "ff ");
+								if ((d - 127) > 255)
+								{
+									fprintf(fpTxt, "ff ");
+									if ((d - 254) > 255)
+									{
+										fprintf(fpTxt, "ff ");
+										fprintf(fpTxt, "%02x ", d - 381);
+									}
+									else
+									{
+										fprintf(fpTxt, "%02x ", d - 254);
+									}
+								}
+								else
+								{
+									fprintf(fpTxt, "%02x ", d - 127);
+								}
+							}
 
+							fprintf(fpTxt, "%02x ", c);
+							d = 128;
+							c = 0;
+						}
 					}
-
 				}
-				else if (pixel > 0)
-				{
-					d++;
-					if (c > 0)
-					{
-						fprintf(fpTxt, "%02x ", c);
-						c = 0;
-					}
-					
-					if (((index - padding * y) % width == width - 1) && c == 0)
-					{
-						fprintf(fpTxt, "%02x ", d);
-						fprintf(fpTxt, "%02x ", c);
-					}
-					
-				}
+				c = 0;
+				d = 128;
+				//fprintf(fpTxt, "\n");  
 			}
-			c = 0;
-			d = 128;
-			//fprintf(fpTxt, "\n");  
+			fprintf(fpTxt, "\n");
+			fclose(fpTxt);
+			
+			free(image);
 		}
 
-		fclose(fpTxt);  
-
-		free(image);     
-	}
-	// 모든 파일 다시 반복해서 시작위치와 끝나는 위치 기록
 	for (int i = 0; i <= iter; i++)
 	{
 		FILE *fpBmp;
 		FILE *fpTxt;
+		FILE *fpEpf;
 		BITMAPFILEHEADER fileHeader;
 		BITMAPINFOHEADER infoHeader;
+
+		//size_t result;
+		unsigned char *buffer;
 
 		unsigned char *image;
 		int size;
 		int width, height;
 		int padding;
+		//unsigned char* epf_str;
 
+		
+
+		fpEpf = fopen(epf2, "rb");
+		if (fpEpf == NULL)
+		{
+			puts(" Cannot file open ! ");
+			return 1;
+		}
+		buffer = malloc(16);
+		//epf_str = malloc(16);
+		fseek(fpEpf, -16 * (iter + 1) + 16 * i, SEEK_END);
+
+		fread(buffer, 16, 1, fpEpf);
+
+		//fgets(epf_str, 16, fpEpf);
+
+		fclose(fpEpf);
 
 		char filename[20];
 		sprintf(filename, "%05d.bmp", i);
@@ -227,30 +326,33 @@ int main()
 		if (fpBmp == NULL)
 			return 0;
 
-		if (fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) < 1)
+		//if
+		(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) );
+		//{
+		//	fclose(fpBmp);
+		//	return 0;
+		//}
+
+		if 
+			(fileHeader.bfType != 'MB')
 		{
 			fclose(fpBmp);
 			return 0;
 		}
 
-		if (fileHeader.bfType != 'MB')
-		{
-			fclose(fpBmp);
-			return 0;
-		}
-
-		if (fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) < 1)
-		{
-			fclose(fpBmp);
-			return 0;
-		}
-
+		//if 
+		(fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) );
+		//{
+			//(fpBmp);
+			//return 0;
+		//}
+		
 		if (infoHeader.biBitCount != 8)
 		{
 			fclose(fpBmp);
 			return 0;
 		}
-
+		
 		size = infoHeader.biSizeImage;
 		width = infoHeader.biWidth;
 		height = infoHeader.biHeight;
@@ -266,11 +368,12 @@ int main()
 
 		fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
 
-		if (fread(image, size, 1, fpBmp) < 1)
-		{
-			fclose(fpBmp);
-			return 0;
-		}
+		//if 
+		(fread(image, size, 1, fpBmp));
+		//{
+		//	fclose(fpBmp);
+		//	return 0;
+		//}
 
 		fclose(fpBmp);
 
@@ -280,16 +383,19 @@ int main()
 			free(image);
 			return 0;
 		}
-
+		for (int b = 0; b <= 7; b++)
+		{	
+			int buf = buffer[b];
+			fprintf(fpTxt, "%02x ", buf);
+		}
+		//fprintf(fpTxt, "%s ", epf_str);
+		//fwrite(buffer,sizeof(unsigned int)*2,8, fpTxt);
 		int c = 0;
 		int d = 128;
 
 		//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
 		//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
 		//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
-		
-		
-		// t에 스텐실 개수 저장해서 배열에 저장함
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -301,27 +407,72 @@ int main()
 				if (pixel == 0)
 				{
 					c++;
-					if (d > 128)
+					if (d > 128 && d <= 255)
 					{
 						//fprintf(fpTxt, "%02x ", d);
-						d = 128;
 						t++;
+						d = 128;
 					}
+					else if (d > 255)
+					{
+						//fprintf(fpTxt, "FF ");
+						if ((d - 127) > 255)
+						{
+							//fprintf(fpTxt, "ff ");
+
+							if ((d - 254) > 255)
+							{
+								//fprintf(fpTxt, "ff ");
+								//fprintf(fpTxt, "%02x ", d - 381);
+								t += 4;
+							}
+							else
+							{
+								//fprintf(fpTxt, "%02x ", d - 254);
+								t += 3;
+							}
+						}
+						else
+						{
+							//fprintf(fpTxt, "%02x ", d - 127);
+							t += 2;
+						}
+						d = 128;
+					}
+				
 					if (((index - padding * y) % width == width - 1) && c > 0)
 					{
 						if (c == width)
 						{
 							c = width;
-							//fprintf(fpTxt, "%02x ", c);
-							//fprintf(fpTxt, "00 ");
+							if (c >= 128)
+							{
+								//fprintf(fpTxt, "7f ");
+								//fprintf(fpTxt, "00 ");
+							}
+							else
+							{
+								//fprintf(fpTxt, "%02x ", c);
+								//fprintf(fpTxt, "00 ");
+							}
 							t += 2;
 						}
 						else
 						{
-							c = 0;
-							//fprintf(fpTxt, "%02x ", c);
-							t++;
+							if (c >= 128)
+							{
+								//fprintf(fpTxt, "7F ");
+								//fprintf(fpTxt, "00 ");
+								t += 2;
+							}
+							else {
+								//fprintf(fpTxt, "%02x ", c);
+								//fprintf(fpTxt, "00 ");
+								t++;
+							}
+							
 						}
+						c = 0;
 
 					}
 
@@ -330,6 +481,7 @@ int main()
 				else if (pixel > 0)
 				{
 					d++;
+
 					if (c > 0)
 					{
 						//fprintf(fpTxt, "%02x ", c);
@@ -339,33 +491,71 @@ int main()
 
 					if (((index - padding * y) % width == width - 1) && c == 0)
 					{
-						//fprintf(fpTxt, "%02x ", d);
+						if (d > 128 && d <= 255)
+						{
+							//fprintf(fpTxt, "%02x ", d);
+							t += 2;
+						}
+						else if (d > 255)
+						{
+							//fprintf(fpTxt, "FF ");
+
+
+							if ((d - 127) > 255)
+							{
+								//fprintf(fpTxt, "ff ");
+
+								if ((d - 254) > 255)
+								{
+									//fprintf(fpTxt, "ff ");
+									//fprintf(fpTxt, "%02x ", d - 381);
+									t += 5;
+								}
+								else
+								{
+									//fprintf(fpTxt, "%02x ", d - 254);
+									t += 4;
+								}
+							}
+							else
+							{
+								//fprintf(fpTxt, "%02x ", d - 127);
+								
+								t += 3;
+							}
+						}
 						//fprintf(fpTxt, "%02x ", c);
-						t += 2;
+						d = 128;
+						
 					}
 
 				}
 			}
 			c = 0;
 			d = 128;
-			//fprintf(fpTxt, "\n"); 
-		} 
-		numArr[i+1] = t;
+			//fprintf(fpTxt, "\n");  
+		}
+		numArr[i + 1] = t;
 		t = 0;
 		numArr2[i + 1] = width * height;
+		
 		if (i == 0)
 		{
-			fprintf(fpTxt, "\n");
+			int initial_square = width * height;
+			unsigned char data[4];
+			memcpy(data, &initial_square, 4);
+			//fprintf(fpTxt, "\n");
 			fprintf(fpTxt, "00 00 00 00 ");
-			if (width * height < 256)
+			int f = 0;
+			for (f = 0; f < 4; f++)
 			{
-				fprintf(fpTxt, "%02x 00 00 00", width * height);
+				fprintf(fpTxt, "%02x ", data[f]);
 			}
-			else if (width * height < 65536)
+			for (f = 0; f < 4; f++)
 			{
-				fprintf(fpTxt, "%02x 00 00", width * height);
+				data[f] = 0;
 			}
-			fprintf(fpTxt, "\n");
+
 		}
 		else
 		{
@@ -374,7 +564,7 @@ int main()
 			unsigned char data[4];
 
 			int o = 1;
-			while (o<=i)
+			while (o <= i)
 			{
 				p += numArr[o];
 				o++;
@@ -388,37 +578,55 @@ int main()
 				z++;
 			}
 			int max = 0x00;
-			max = t2 + p ;
-		//시작위치 : 전에 있던 스텐실의 총 개수 (p) + 이전 이미지들의 넓이 합 
+			max = t2 + p;
+			//시작위치 : 전에 있던 스텐실의 총 개수 (p) + 이전 이미지들의 넓이 합 +1
 			memcpy(data, &max, 4);
 			int f = 0;
 			for (f = 0; f < 4; f++)
 			{
-				fprintf(fpTxt, "%02x ",data[f]);
+				fprintf(fpTxt, "%02x ", data[f]);
 			}
 			for (f = 0; f < 4; f++)
 			{
-				data[f] = 0 ;
+				data[f] = 0;
 			}
-		//끝위치 : 시작위치 + 넓이
-			t3 = width * height ;
+			//끝위치 : 시작위치 + 넓이-1
+			t3 = width * height;
 			int max2 = 0x00;
 			max2 = (max + t3);
 
 			memcpy(data, &max2, 4);
-			for (f = 0; f < 4; f++)					
+			for (f = 0; f < 4; f++)
 			{
 				fprintf(fpTxt, "%02x ", data[f]);
 			}
+			//fprintf(fpTxt, "\n");
 
-			fprintf(fpTxt, "\n");
+			if (i == iter)
+			{
+				o = 1;
 
+				while (o <= iter+1)
+				{
+					t5 += numArr[o];
+					o++;
+				}
+
+				z = 1;
+
+				while (z <= iter+1)
+				{
+					t6 += numArr2[z];
+					z++;
+				}
+			}
 
 		}
-
 		fclose(fpTxt);
 
 		free(image);
+		free(buffer);
+
 	}
 	return 0;
 }
