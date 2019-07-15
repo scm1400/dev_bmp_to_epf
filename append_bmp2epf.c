@@ -142,9 +142,7 @@ int main()
 			puts(" Cannot file open ! ");
 			return 1;
 		}
-		//fprintf(fpTxt, "\n ");
-		//fprintf(fpTxt, "%d", size);
-		//fprintf(fpTxt, "\n ");
+
 
 		buffer = malloc(16);
 
