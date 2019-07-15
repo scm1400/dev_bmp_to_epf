@@ -49,13 +49,18 @@ int main()
 	int iter;
 	char epf[20];
 	char epf2[300];
-
-	printf("사진의 개수(n)를 입력하세요: 00000.bmp ~ n.bmp ");
+	printf("\n [ BMP to EPF Converter ]\n");
+	printf("\n 2019.07.06 \n");
+	printf("\n 구버전 개발자 무이스 만듬. \n");
+	printf("\n 사진의 개수(n)를 입력하세요: 00000.bmp ~ n.bmp ");
 	scanf("%d", &iter);
+	printf("\n");
 
-	printf("기존 epf파일 이름을 적어주세요: xxxxx.epf ");
+	printf(" 기존 epf파일 이름을 적어주세요. xxxxx.epf ( 안적으면 픽셀 값 + 스텐실 값만 출력 )\n\n ");
 	scanf("%s", &epf);
 	sprintf(epf2, "%s.epf", epf);
+
+	printf("\n 처리중.. 프로그램이 꺼질 때 까지 기다려주세요. \n ");
 
 		for (int i = 0; i <= iter; i++)
 		{
@@ -216,7 +221,7 @@ int main()
 							{
 								if (c >= 128)
 								{
-									fprintf(fpTxt, "7f ");
+									//fprintf(fpTxt, "7f ");
 									fprintf(fpTxt, "00 ");
 								}
 								else {
@@ -239,6 +244,23 @@ int main()
 						if(c>=128)
 						{
 							fprintf(fpTxt, "7f ");
+							if ((c - 127) >= 128)
+							{
+								fprintf(fpTxt, "7f ");
+								if ((c - 254) >= 128)
+								{
+									fprintf(fpTxt, "7f ");
+									fprintf(fpTxt, "%02x ", c - 381);
+								}
+								else
+								{
+									fprintf(fpTxt, "%02x ", c - 254);
+								}
+							}
+							else 
+							{
+								fprintf(fpTxt, "%02x ", c - 127);
+							}
 							c = 0;
 						}
 						if (((index - padding * y) % width == width - 1) && c == 0)
@@ -290,6 +312,7 @@ int main()
 		FILE *fpBmp;
 		FILE *fpTxt;
 		FILE *fpEpf;
+		FILE *fpFront;
 		BITMAPFILEHEADER fileHeader;
 		BITMAPINFOHEADER infoHeader;
 
@@ -463,7 +486,7 @@ int main()
 							{
 								//fprintf(fpTxt, "7F ");
 								//fprintf(fpTxt, "00 ");
-								t += 2;
+								t++;
 							}
 							else {
 								//fprintf(fpTxt, "%02x ", c);
@@ -482,10 +505,35 @@ int main()
 				{
 					d++;
 
-					if (c > 0)
+					if (c > 0 && c < 128)
 					{
 						//fprintf(fpTxt, "%02x ", c);
+						c = 0;
 						t++;
+					}
+					if (c >= 128)
+					{
+						//fprintf(fpTxt, "7f ");
+						if ((c - 127) >= 128)
+						{
+							//fprintf(fpTxt, "7f ");
+							if ((c - 254) >= 128)
+							{
+								//fprintf(fpTxt, "7f ");
+								//fprintf(fpTxt, "%02x ", c - 381);
+								t += 4;
+							}
+							else
+							{
+								//fprintf(fpTxt, "%02x ", c - 254);
+								t += 3;
+							}
+						}
+						else
+						{
+							//fprintf(fpTxt, "%02x ", c - 127);
+							t += 2;
+						}
 						c = 0;
 					}
 
@@ -579,7 +627,7 @@ int main()
 			}
 			int max = 0x00;
 			max = t2 + p;
-			//시작위치 : 전에 있던 스텐실의 총 개수 (p) + 이전 이미지들의 넓이 합 +1
+			//시작위치 : 전에 있던 스텐실의 총 개수 (p) + 이전 이미지들의 넓이 합 
 			memcpy(data, &max, 4);
 			int f = 0;
 			for (f = 0; f < 4; f++)
@@ -590,7 +638,7 @@ int main()
 			{
 				data[f] = 0;
 			}
-			//끝위치 : 시작위치 + 넓이-1
+			//끝위치 : 시작위치 + 넓이
 			t3 = width * height;
 			int max2 = 0x00;
 			max2 = (max + t3);
@@ -626,7 +674,59 @@ int main()
 
 		free(image);
 		free(buffer);
+		
+		if (i == iter)
+		{
+			int iter2 = iter + 1;
+			int fileLength = t5 + t6;
 
+			unsigned char data[4];
+			unsigned char data2[4];
+
+			memcpy(data, &iter2, 4);
+			memcpy(data2, &fileLength, 4);
+
+			fpFront = fopen("앞부분.txt", "at+");
+			fprintf(fpFront, "\n");
+			int f = 0;
+			for (f = 0; f < 4; f++)
+			{
+				fprintf(fpFront, "%02x ", data[f]);
+			}
+			fprintf(fpFront, "00 00 00 00 ");
+			for (f = 0; f < 4; f++)
+			{
+				fprintf(fpFront, "%02x ", data2[f]);
+			}
+			fclose(fpFront);
+		}
 	}
 	return 0;
 }
+
+/*
+fclose(fpTxt);
+
+free(image);
+
+int iter2 = iter + 1;
+
+unsigned char data[4];
+fpTxt = fopen("stencil.txt", "r+");
+fseek(fpTxt, 0, SEEK_SET);
+memcpy(data, &iter2, 4);
+int f = 0;
+for (f = 0; f < 4; f++)
+{
+	fprintf(fpTxt, "%02x ", data[f]);
+}
+fprintf(fpTxt, "00 00 00 00 ");
+
+int len = t5 + t6;
+memcpy(data, &len, 4);
+for (f = 0; f < 4; f++)
+{
+	fprintf(fpTxt, "%02x ", data[f]);
+}
+fclose(fpTxt);
+*/
