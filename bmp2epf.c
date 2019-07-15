@@ -81,12 +81,6 @@ int main()
 			if (fpBmp == NULL)
 				return 0;
 
-		//	if
-				(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) );
-		//	{
-		//		fclose(fpBmp);
-		//		return 0;
-		//	}
 
 			if (fileHeader.bfType != 'MB')
 			{
@@ -94,12 +88,8 @@ int main()
 				return 0;
 			}
 
-		//	if 
 			(fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) );
-		//	{
-			//	fclose(fpBmp);
-		//		return 0;
-		//	}
+
 			
 			if (infoHeader.biBitCount != 8)
 			{
@@ -123,12 +113,6 @@ int main()
 
 			fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
 
-			//if
-			(fread(image, size, 1, fpBmp));
-			//{
-			//	fclose(fpBmp);
-			//	return 0;
-		//	}
 
 			fclose(fpBmp);
 
@@ -155,7 +139,6 @@ int main()
 					fprintf(fpTxt, "%02x ", pixel);
 				}
 
-				//fprintf(fpTxt, "\n");
 			}
 
 			//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
@@ -334,12 +317,11 @@ int main()
 			return 1;
 		}
 		buffer = malloc(16);
-		//epf_str = malloc(16);
+		
 		fseek(fpEpf, -16 * (iter + 1) + 16 * i, SEEK_END);
 
 		fread(buffer, 16, 1, fpEpf);
 
-		//fgets(epf_str, 16, fpEpf);
 
 		fclose(fpEpf);
 
@@ -349,12 +331,7 @@ int main()
 		if (fpBmp == NULL)
 			return 0;
 
-		//if
 		(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp) );
-		//{
-		//	fclose(fpBmp);
-		//	return 0;
-		//}
 
 		if 
 			(fileHeader.bfType != 'MB')
@@ -363,12 +340,8 @@ int main()
 			return 0;
 		}
 
-		//if 
+
 		(fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp) );
-		//{
-			//(fpBmp);
-			//return 0;
-		//}
 		
 		if (infoHeader.biBitCount != 8)
 		{
@@ -391,12 +364,7 @@ int main()
 
 		fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
 
-		//if 
 		(fread(image, size, 1, fpBmp));
-		//{
-		//	fclose(fpBmp);
-		//	return 0;
-		//}
 
 		fclose(fpBmp);
 
@@ -411,8 +379,7 @@ int main()
 			int buf = buffer[b];
 			fprintf(fpTxt, "%02x ", buf);
 		}
-		//fprintf(fpTxt, "%s ", epf_str);
-		//fwrite(buffer,sizeof(unsigned int)*2,8, fpTxt);
+
 		int c = 0;
 		int d = 128;
 
@@ -648,7 +615,6 @@ int main()
 			{
 				fprintf(fpTxt, "%02x ", data[f]);
 			}
-			//fprintf(fpTxt, "\n");
 
 			if (i == iter)
 			{
@@ -704,29 +670,3 @@ int main()
 	return 0;
 }
 
-/*
-fclose(fpTxt);
-
-free(image);
-
-int iter2 = iter + 1;
-
-unsigned char data[4];
-fpTxt = fopen("stencil.txt", "r+");
-fseek(fpTxt, 0, SEEK_SET);
-memcpy(data, &iter2, 4);
-int f = 0;
-for (f = 0; f < 4; f++)
-{
-	fprintf(fpTxt, "%02x ", data[f]);
-}
-fprintf(fpTxt, "00 00 00 00 ");
-
-int len = t5 + t6;
-memcpy(data, &len, 4);
-for (f = 0; f < 4; f++)
-{
-	fprintf(fpTxt, "%02x ", data[f]);
-}
-fclose(fpTxt);
-*/
