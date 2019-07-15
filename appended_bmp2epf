@@ -51,15 +51,12 @@ int main()
 	//char epf2[300];
 	printf("\n [ BMP to EPF Converter ]\n");
 	printf("\n 2019.07.06 \n");
-	printf("\n  BMP 뒤에 있는 위치 값을 사용하는 프로그램입니다.\n");
+	printf("\n BMP 뒤에 있는 위치 값을 사용하는 프로그램입니다.\n");
 	printf("\n 구버전 개발자 무이스 만듬. \n");
 	printf("\n 사진의 개수(n)를 입력하세요: 00000.bmp ~ n.bmp ");
 	scanf("%d", &iter);
 	printf("\n");
 
-	//printf(" 기존 epf파일 이름을 적어주세요. xxxxx.epf ( 안적으면 픽셀 값 + 스텐실 값만 출력 )\n\n ");
-	//scanf("%s", &epf);
-	//sprintf(epf2, "%s.epf", epf);
 
 	printf("\n 처리중.. 프로그램이 꺼질 때 까지 기다려주세요. \n ");
 
@@ -124,12 +121,7 @@ int main()
 
 		fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
 
-		//if
 		(fread(image, size, 1, fpBmp));
-		//{
-		//	fclose(fpBmp);
-		//	return 0;
-	//	}
 
 		fclose(fpBmp);
 
@@ -156,12 +148,8 @@ int main()
 				fprintf(fpTxt, "%02x ", pixel);
 			}
 
-			//fprintf(fpTxt, "\n");
 		}
 
-		//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
-		//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
-		//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -336,12 +324,9 @@ int main()
 		if (fpBmp == NULL)
 			return 0;
 
-		//if
+
 		(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, fpBmp));
-		//{
-		//	fclose(fpBmp);
-		//	return 0;
-		//}
+
 
 		if
 			(fileHeader.bfType != 'MB')
@@ -350,12 +335,7 @@ int main()
 			return 0;
 		}
 
-		//if 
 		(fread(&infoHeader, sizeof(BITMAPINFOHEADER), 1, fpBmp));
-		//{
-			//(fpBmp);
-			//return 0;
-		//}
 
 		if (infoHeader.biBitCount != 8)
 		{
@@ -378,12 +358,8 @@ int main()
 
 		fseek(fpBmp, fileHeader.bfOffBits, SEEK_SET);
 
-		//if 
+
 		(fread(image, size, 1, fpBmp));
-		//{
-		//	fclose(fpBmp);
-		//	return 0;
-		//}
 
 		fseek(fpBmp, -8, SEEK_END);
 
@@ -402,14 +378,10 @@ int main()
 			int buf = buffer[b];
 			fprintf(fpTxt, "%02x ", buf);
 		}
-		//fprintf(fpTxt, "%s ", epf_str);
-		//fwrite(buffer,sizeof(unsigned int)*2,8, fpTxt);
+
 		int c = 0;
 		int d = 128;
 
-		//각 줄의 스텐실 작성 픽셀 값이 연속으로 0이면 k개 만큼 0k 로 개수를 표시하고
-		//0보다 큰 픽셀 값이 연속으로 나오면 128 + 개수를 표시
-		//남은 픽셀 값이 0 으로 마무리되면 0개수에 상관없이 00(줄마침)표시
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -583,7 +555,6 @@ int main()
 			int initial_square = width * height;
 			unsigned char data[4];
 			memcpy(data, &initial_square, 4);
-			//fprintf(fpTxt, "\n");
 			fprintf(fpTxt, "00 00 00 00 ");
 			int f = 0;
 			for (f = 0; f < 4; f++)
